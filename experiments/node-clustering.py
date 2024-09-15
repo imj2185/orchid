@@ -306,10 +306,12 @@ if __name__ == "__main__":
     parser.add_argument("--ncomponents", "-k", required=True, type=int)
     args = parser.parse_args()
 
-    jo = json.load(
+    jo_list = json.load(
         gzip.open(args.input, "r") if ".gz" in args.input else open(args.input, "r")
     )
-
+    
+    jo = jo_list[0]
+    
     if len(jo) == 0:
         print("Warn: empty file list")
     else:
