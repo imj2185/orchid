@@ -113,6 +113,47 @@ function wasserstein(u, v, C, dispersions)
     OptimalTransport.sinkhorn2(X, Y, C, 1e-1; maxiter=500, atol=1e-2)
 end
 
+function wasserstein2(u, v, C, dispersions)
+    min_sum = 0.0
+    max_sum = 0.0
+
+    mu_u = Array(dispersions[u])
+    mu_v = Array(dispersions[v])
+
+    lazy = 0.0
+    if (mu_u[u] < mu_v[v])
+        lazy = mu_u[u]
+    else
+        lazy = mu_v[v]
+    end
+
+    mu_u[u] = mu_u[u] - lazy
+    mu_v[v] = mu_v[v] - lazy
+
+    mu_u = mu_u ./ (1-lazy)
+    mu_v = mu_v ./ (1-lazy)
+
+    n = length(mu_u)
+
+    for i = 1:n
+        min_sum += min(mu_u[i], mu_v[i])
+        max_sum += max(mu_u[i], mu_v[i])
+    end
+
+    s = (1 - mu_u[v] - mu_v[u] - max_sum)
+    t = (1 - mu_u[v] - mu_v[u] - min_sum)
+
+    if s < 0
+        s = 0
+    end
+
+    if t < 0
+        t = 0
+    end
+
+    lazy + (1 - lazy) * (1 - min_sum + s + t)
+end
+
 @inline mm(i, j) = i < j ? CartesianIndex(i, j) : CartesianIndex(j, i)
 
 abstract type AggregateMean end
