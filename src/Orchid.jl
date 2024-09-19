@@ -225,7 +225,7 @@ function hypergraph_curvatures(dispersion::Type, aggregations, rc, cr, alpha, co
     w = zeros(Float32, length(rc), length(rc))
     ThreadsX.foreach(eachindex(rc)) do i 
         for j in (i+1):length(rc)
-            w[mm(j, i)] = wasserstein(i, j, C, D) 
+            w[mm(j, i)] = wasserstein2(i, j, C, D) 
         end 
     end
 
