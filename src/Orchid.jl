@@ -221,6 +221,8 @@ function hypergraph_curvatures(dispersion::Type, aggregations, rc, cr, alpha, co
     @info "Computing Dispersions"
     D = ThreadsX.map(n -> disperse(dispersion, n, alpha, neighbors, rc, cr, rw), eachindex(rc))
 
+    start_time = time_ns()  # Capture start time
+
     @info "Computing Directional Curvature"
     w = zeros(Float32, length(rc), length(rc))
     ThreadsX.foreach(eachindex(rc)) do i 
@@ -241,7 +243,10 @@ function hypergraph_curvatures(dispersion::Type, aggregations, rc, cr, alpha, co
 
         (aggregation=Symbol(aggregation), edge_curvature=ec, node_curvature_edges=nce)
     end
+    elapsed_time = (time_ns() - start_time) * 1e-9  # Calculate elapsed time in seconds
 
+    @info "Total time for W calculations : $elapsed_time seconds\n"
+    
     (dispersions=D, directional_curvature=1 .- w, node_curvature_neighborhood=nc, aggregations=ac)
 end
 
